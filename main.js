@@ -239,4 +239,117 @@ const pets = [
       type: "dino",
       imageUrl: "http://lsae2.iypcdn.com/static//modules/uploads/photos/language1/dino-live-22.jpg?119"
     }
-  ];
+
+   
+    
+
+  ]
+
+
+
+  const renderToDom = (divId, htmlToRender) => {
+    const selectedDiv = document.querySelector(divId);
+    selectedDiv.innerHTML = htmlToRender;
+  };
+
+
+
+const cardsOnDom = (array) => {
+  let domString = "";
+  for (const pet of array) {
+
+  domString +=  `<div class="card" style="width: 18rem;">
+        <h1 class = "pet-name">${pet.name}</h1>
+        <img src = ${pet.imageUrl} class = "pet-img" alt = ${pet.name}>
+      <p class = "special-skill">${pet.specialSkill}</p>
+      <h5 class = "pet-type">${pet.type}</h5>
+      <button class="btn btn-danger" id="delete--${pet.id}">Delete</button>
+  </div>`;
+
+}
+
+// RENDER TO THE DOM FUNCTION
+renderToDom("#app", domString);
+}
+
+const filter = (array, categoryString) => {
+  const categoryArray = [];
+
+   array.forEach((item) => {
+     if (item.name === categoryString || item.type === categoryString) {
+       categoryArray.push(item);
+    }
+   
+  });
+
+  return categoryArray;
+}
+
+const form = document.querySelector('form');
+
+//CREATE A NEW PET CARD AND RENDER IT ON THE DOM
+const createPet = (newPet) => {
+
+  newPet.preventDefault();
+
+  const newPetObj = {
+    id: pets.length + 1,
+    name: document.querySelector("#name").value,
+    color: document.querySelector("#color").value,
+    specialSkill: document.querySelector('#specialSkill').value,
+    type: document.querySelector('#type').value,
+    image: document.querySelector("#image").value
+  }
+
+  pets.push(newPetObj);
+  cardsOnDom(pets);
+  form.reset();
+}
+
+form.addEventListener('submit', createPet);
+
+// DELETE A PET CARD AND UPDATE THE CHANGES TO THE DOM
+
+// 1. Target the app div
+const app = document.querySelector("#app");
+
+app.addEventListener('click', (x) => {
+
+  if (x.target.id.includes("delete")) {
+   
+    const [, id] = x.target.id.split("--");
+    const index = pets.findIndex(x => x.id === Number(id));
+
+    // .splice modifies the original array
+    pets.splice(index, 1);
+
+// 5. Repaint the DOM with the updated array
+    cardsOnDom(pets);
+  }
+});
+
+const showTypeButton = document.querySelector("#show-type");
+const showNameButton = document.querySelector("#show-name");
+const showAllButton = document.querySelector("#show-all");
+
+showAllButton.addEventListener("click", () => {
+  cardsOnDom(pets);
+});
+
+showTypeButton.addEventListener("click", () => {
+  const petTypeOnly = filter(pets,"cat");
+  cardsOnDom(petTypeOnly);
+});
+
+showNameButton.addEventListener("click", () => {
+  const petNameOnly = filter(pets,"George");
+  cardsOnDom(petNameOnly);
+});
+
+const startApp = () => {
+  cardsOnDom(pets);
+  // events(); // ALWAYS LAST
+}
+
+
+startApp();
